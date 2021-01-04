@@ -13,9 +13,7 @@ import rasterio
 import torch
 import torch.nn.functional as F
 
-import segmentation_models_pytorch as smp
-from models import FCN
-
+import models
 from dataloaders.TileDatasets import TileInferenceDataset
 import utils
 
@@ -81,12 +79,9 @@ def main():
     # Load model
     #-------------------
     if args.model == "unet":
-        model = smp.Unet(
-            encoder_name='resnet18', encoder_depth=3, encoder_weights=None,
-            decoder_channels=(128, 64, 64), in_channels=4, classes=len(utils.NLCD_CLASSES)
-        )
+        model = models.get_unet()
     elif args.model == "fcn":
-        model = FCN(num_input_channels=4, num_output_classes=len(utils.NLCD_CLASSES), num_filters=64)
+        model = models.get_fcn()
     else:
         raise ValueError("Invalid model")
     model.load_state_dict(torch.load(args.model_fn))

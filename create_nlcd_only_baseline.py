@@ -16,7 +16,7 @@ args = parser.parse_args()
 def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
-    df = pd.read_csv("data/splits/val_inference.csv")
+    df = pd.read_csv("data/splits/val_inference_both.csv")
     fns = df["label_fn"].values
 
     for i, fn in enumerate(fns):

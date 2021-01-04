@@ -18,9 +18,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-import segmentation_models_pytorch as smp
-from models import FCN
-
+import models
 import utils
 
 NUM_WORKERS = 4
@@ -128,12 +126,9 @@ def main():
     # Setup training
     #-------------------
     if args.model == "unet":
-        model = smp.Unet(
-            encoder_name='resnet18', encoder_depth=3, encoder_weights=None,
-            decoder_channels=(128, 64, 64), in_channels=4, classes=len(utils.NLCD_CLASSES)
-        )
+        model = models.get_unet()
     elif args.model == "fcn":
-        model = FCN(num_input_channels=4, num_output_classes=len(utils.NLCD_CLASSES), num_filters=64)
+        model = models.get_fcn()
     else:
         raise ValueError("Invalid model")
 
@@ -148,7 +143,7 @@ def main():
     #-------------------
     # Model training
     #-------------------
-    training_losses = []
+    training_task_losses = []
     num_times_lr_dropped = 0 
     model_checkpoints = []
     temp_model_fn = os.path.join(args.output_dir, "most_recent_model.pt")
@@ -177,7 +172,7 @@ def main():
             print("Learning rate dropped")
             print("")
             
-        training_losses.append(training_losses[0])
+        training_task_losses.append(training_losses[0])
             
         if num_times_lr_dropped == 4:
             break
@@ -188,7 +183,7 @@ def main():
     #-------------------
     save_obj = {
         'args': args,
-        'training_task_losses': training_losses,
+        'training_task_losses': training_task_losses,
         "checkpoints": model_checkpoints
     }
 
