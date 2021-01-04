@@ -6,7 +6,7 @@ This repo contains implementations of several baseline for the ["Multitemporal S
 
 If you make use of this implementation in your own project or want to refer to it in a scientific publication, **please consider referencing this GitHub repository and citing our paper**:
 ```
-@Article{,
+@Article{malkinDFC2021,
   author  = {Kolya Malkin and Caleb Robinson and Nebojsa Jojic},
   title   = {High-resolution land cover change from low-resolution labels: Simple baselines for the 2021 IEEE GRSS Data Fusion Contest},
   year    = {2021},
