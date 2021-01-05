@@ -143,7 +143,7 @@ zip -9 -r ../fcn_separate_baseline.zip *.tif
 
 ## Visualizations
 
-See the notebook [here](https://github.com/calebrob6/dfc2021-msd-baseline/blob/main/notebooks/Visualization%20demo.ipynb) for examples of how to create the following types of figures:
+See the notebook [here](notebooks/Visualization%20demo.ipynb) for examples of how to create the following types of figures:
 
 <p align="center">
     <img src="images/fcn_unet.png" width="430"/>
