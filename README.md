@@ -44,8 +44,8 @@ The 5 baseline methods we describe are:
 
 
 Note that there are multiple ways to use a model that predicts NLCD labels to generate land cover change predictions for the competition. We implement two in this training/inference pipeline, however only report results for the second method in the paper:
-1. Using a hard mapping between NLCD classes and reduced land cover classes. Here, each NLCD class is mapped to one of the 4 reduced land cover classes-- see the competition details or [utils.py](utils.py#L57) for this mapping. This is the default behaviour in the `inference.py` and `independent_pairs_to_predictions.py` scripts.
-2. Using a soft mapping as described in the accompanying arxiv paper. To generate results with this method use the `--save_soft` flag when running `inference.py` to save output files that contain quantized per class probabilities, then use the `--soft_assignment` flag when running `independent_pairs_to_predictions.py`. *NOTE: the outputs from this process will be much larger than the first.*
+1. (Hard assignment) Using a hard mapping between NLCD classes and reduced land cover classes. Here, each NLCD class is mapped to one of the 4 reduced land cover classes-- see the competition details or [utils.py](utils.py#L57) for this mapping. This is the default behaviour in the `inference.py` and `independent_pairs_to_predictions.py` scripts.
+2. (Soft assignment) Using a soft mapping as described in the accompanying arxiv paper. To generate results with this method use the `--save_soft` flag when running `inference.py` to save output files that contain quantized per class probabilities, then use the `--soft_assignment` flag when running `independent_pairs_to_predictions.py`. *NOTE: the outputs from this process will be much larger than the first.*
 
 
 ## Running experiments
@@ -67,7 +67,7 @@ zip -9 -r ../nlcd_only_baseline.zip *.tif
 
 ```
 conda activate dfc2021
-python train.py --input_fn data/splits/training_set_naip_nlcd_both.csv --output_dir results/unet_both_baseline/ --save_most_recent 2> /dev/null
+python train.py --input_fn data/splits/training_set_naip_nlcd_both.csv --output_dir results/unet_both_baseline/ --save_most_recent --num_epochs 10 2> /dev/null
 python inference.py --input_fn data/splits/val_inference_both.csv --model_fn results/unet_both_baseline/most_recent_model.pt --output_dir results/unet_both_baseline/output/
 python independent_pairs_to_predictions.py --input_dir results/unet_both_baseline/output/ --output_dir results/unet_both_baseline/submission/
 cd results/unet_both_baseline/submission/
@@ -78,8 +78,8 @@ zip -9 -r ../unet_both_baseline.zip *.tif
 
 ```
 conda activate dfc2021
-python train.py --input_fn data/splits/training_set_naip_nlcd_2013.csv --output_dir results/unet_2013_baseline/ --save_most_recent 2> /dev/null
-python train.py --input_fn data/splits/training_set_naip_nlcd_2017.csv --output_dir results/unet_2017_baseline/ --save_most_recent 2> /dev/null
+python train.py --input_fn data/splits/training_set_naip_nlcd_2013.csv --output_dir results/unet_2013_baseline/ --save_most_recent --num_epochs 10 2> /dev/null
+python train.py --input_fn data/splits/training_set_naip_nlcd_2017.csv --output_dir results/unet_2017_baseline/ --save_most_recent --num_epochs 10 2> /dev/null
 
 python inference.py --input_fn data/splits/val_inference_2013.csv --model_fn results/unet_2013_baseline/most_recent_model.pt --output_dir results/unet_2013_baseline/output/
 python inference.py --input_fn data/splits/val_inference_2017.csv --model_fn results/unet_2017_baseline/most_recent_model.pt --output_dir results/unet_2017_baseline/output/
@@ -98,7 +98,7 @@ zip -9 -r ../unet_separate_baseline.zip *.tif
 
 ```
 conda activate dfc2021
-python train.py --input_fn data/splits/training_set_naip_nlcd_both.csv --output_dir results/fcn_both_baseline/ --save_most_recent --model fcn 2> /dev/null
+python train.py --input_fn data/splits/training_set_naip_nlcd_both.csv --output_dir results/fcn_both_baseline/ --save_most_recent --model fcn --num_epochs 10 2> /dev/null
 python inference.py --input_fn data/splits/val_inference_both.csv --model_fn results/fcn_both_baseline/most_recent_model.pt --output_dir results/fcn_both_baseline/output/ --model fcn
 python independent_pairs_to_predictions.py --input_dir results/fcn_both_baseline/output/ --output_dir results/fcn_both_baseline/submission/
 cd results/fcn_both_baseline/submission/
@@ -109,8 +109,8 @@ zip -9 -r ../fcn_both_baseline.zip *.tif
 
 ```
 conda activate dfc2021
-python train.py --input_fn data/splits/training_set_naip_nlcd_2013.csv --output_dir results/fcn_2013_baseline/ --save_most_recent --model fcn 2> /dev/null
-python train.py --input_fn data/splits/training_set_naip_nlcd_2017.csv --output_dir results/fcn_2017_baseline/ --save_most_recent --model fcn 2> /dev/null
+python train.py --input_fn data/splits/training_set_naip_nlcd_2013.csv --output_dir results/fcn_2013_baseline/ --save_most_recent --model fcn --num_epochs 10 2> /dev/null
+python train.py --input_fn data/splits/training_set_naip_nlcd_2017.csv --output_dir results/fcn_2017_baseline/ --save_most_recent --model fcn --num_epochs 10 2> /dev/null
 
 python inference.py --input_fn data/splits/val_inference_2013.csv --model_fn results/fcn_2013_baseline/most_recent_model.pt --output_dir results/fcn_2013_baseline/output/ --model fcn
 python inference.py --input_fn data/splits/val_inference_2017.csv --model_fn results/fcn_2017_baseline/most_recent_model.pt --output_dir results/fcn_2017_baseline/output/ --model fcn
@@ -127,6 +127,8 @@ zip -9 -r ../fcn_separate_baseline.zip *.tif
 
 
 ## Results
+
+**NOTE**: These results are from runs with `--num_epochs 10` and with hard assignment. *We have observed that training longer and using soft assignment gives better results.*
 
 |        Class        | NLCD difference | U-Net both | U-Net separate | FCN both | FCN separate |
 |:------------------- | ---------------:| ----------:| --------------:| --------:| ------------:|
