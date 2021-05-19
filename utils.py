@@ -34,6 +34,15 @@ NLCD_CLASS_COLORMAP = { # Copied from the emebedded color table in the NLCD data
     95: (108, 159, 184, 255)
 }
 
+LC4_CLASS_COLORMAP = {
+    0: (0, 0, 255, 255),
+    1: (0, 128, 0, 255),
+    2: (128, 255, 128, 255),
+    3: (128, 96, 96, 255),
+    4: (0, 0, 0, 255)
+}
+
+
 NLCD_IDX_COLORMAP = {
     idx: NLCD_CLASS_COLORMAP[c]
     for idx, c in enumerate(NLCD_CLASSES)

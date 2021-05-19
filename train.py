@@ -33,7 +33,8 @@ parser.add_argument('--save_most_recent', action="store_true",  help='Flag for s
 parser.add_argument('--model', default='unet',
     choices=(
         'unet',
-        'fcn'
+        'fcn',
+        'hrnet'
     ),
     help='Model to use'
 )
@@ -129,6 +130,8 @@ def main():
         model = models.get_unet()
     elif args.model == "fcn":
         model = models.get_fcn()
+    elif args.model == "hrnet":
+        model = models.get_hrnet()
     else:
         raise ValueError("Invalid model")
 

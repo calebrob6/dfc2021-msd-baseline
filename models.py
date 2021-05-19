@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 import segmentation_models_pytorch as smp
+import seg_hrnet
 
 import utils
 
@@ -40,3 +41,19 @@ def get_unet():
 
 def get_fcn():
     return FCN(num_input_channels=4, num_output_classes=len(utils.NLCD_CLASSES), num_filters=64)
+
+
+def get_hrnet():
+    config = {
+        "DATASET": {
+            "NUM_CLASSES": len(utils.NLCD_CLASSES)
+        },
+        "MODEL": {
+            "EXTRA": {
+                "FINAL_CONV_KERNEL": 1,
+                "NUM_INPUT_CHANNELS": 4
+            }
+        }
+    }
+    config["MODEL"]["EXTRA"].update(seg_hrnet.cfg_cls["hrnet_w32"])
+    return seg_hrnet.HighResolutionNet(config)

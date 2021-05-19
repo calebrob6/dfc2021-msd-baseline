@@ -22,7 +22,7 @@ The following will setup up a conda environment suitable for running the scripts
 conda create -n dfc2021 "python=3.8"
 conda activate dfc2021
 conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
-conda install tifffile matplotlib 
+conda install tifffile matplotlib pandas
 pip install rasterio fiona segmentation-models-pytorch
 
 # optional steps to install a jupyter notebook kernel for this environment

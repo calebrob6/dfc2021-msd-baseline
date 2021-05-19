@@ -31,11 +31,13 @@ parser.add_argument('--output_dir', type=str, required=True, help='The path to o
 parser.add_argument('--overwrite', action="store_true", help='Flag for overwriting `--output_dir` if that directory already exists.')
 parser.add_argument('--gpu', type=int, default=0, help='The ID of the GPU to use')
 parser.add_argument('--batch_size', type=int, default=32, help='Batch size to use during inference.')
+parser.add_argument('--save_4lc', action="store_true", help='Flag to convert NLCD predictions to 4-class land cover predictions.')
 parser.add_argument('--save_soft', action="store_true", help='Flag that enables saving the predicted per class probabilities in addition to the "hard" class predictions.')
 parser.add_argument('--model', default='unet',
     choices=(
         'unet',
-        'fcn'
+        'fcn',
+        'hrnet'
     ),
     help='Model to use'
 )
@@ -82,6 +84,8 @@ def main():
         model = models.get_unet()
     elif args.model == "fcn":
         model = models.get_fcn()
+    elif args.model == "hrnet":
+        model = models.get_hrnet()
     else:
         raise ValueError("Invalid model")
     model.load_state_dict(torch.load(args.model_fn))
@@ -164,10 +168,19 @@ def main():
         output_fn = image_fn.split("/")[-1] # something like "546_naip-2013.tif"
         output_fn = output_fn.replace("naip", "predictions")
         output_fn = os.path.join(args.output_dir, output_fn)
+    
+        if args.save_4lc:
+            output_profile["nodata"] = 4
+            output_fn = output_fn.replace("_predictions-", "_lcpredictions-")
+            output_hard = utils.NLCD_IDX_TO_REDUCED_LC_MAP[output_hard].astype(np.uint8)
 
-        with rasterio.open(output_fn, "w", **output_profile) as f:
-            f.write(output_hard, 1)
-            f.write_colormap(1, utils.NLCD_IDX_COLORMAP)
+            with rasterio.open(output_fn, "w", **output_profile) as f:
+                f.write(output_hard, 1)
+                f.write_colormap(1, utils.LC4_CLASS_COLORMAP)
+        else:
+            with rasterio.open(output_fn, "w", **output_profile) as f:
+                f.write(output_hard, 1)
+                f.write_colormap(1, utils.NLCD_IDX_COLORMAP)
 
 
         if args.save_soft:
